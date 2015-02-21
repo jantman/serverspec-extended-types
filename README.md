@@ -1,12 +1,31 @@
-# Serverspec::Extended::Matchers
+# ServerspecExtendedTypes
 
-TODO: Write a gem description
+[![Build Status](https://travis-ci.org/jantman/serverspec-extended-types.svg?branch=master)](https://travis-ci.org/jantman/serverspec-extended-types)
+[![Code Coverage](https://codecov.io/github/jantman/serverspec-extended-types/coverage.svg?branch=master)](https://codecov.io/github/jantman/serverspec-extended-types?branch=master)
+[![Code Climate](https://codeclimate.com/github/jantman/serverspec-extended-types/badges/gpa.svg)](https://codeclimate.com/github/jantman/serverspec-extended-types)
+[![Gem Version](https://img.shields.io/gem/v/serverspec-extended-types.svg)](https://rubygems.org/gems/serverspec-extended-types)
+[![Total Downloads](https://img.shields.io/gem/dt/serverspec-extended-types.svg)](https://rubygems.org/gems/serverspec-extended-types)
+[![Github Issues](https://img.shields.io/github/issues/jantman/serverspec-extended-types.svg)](https://github.com/jantman/serverspec-extended-types/issues)
+[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/0.1.0/active.svg)](http://www.repostatus.org/#active)
+
+serverspec-extended-types provides some purpose-specific types to be used with [serverspec](http://serverspec.org/) for
+testing various things on a host, as well as some types for high-level integration tests that make actual requests against
+services on the host.
+
+Current types include:
+
+* 
+
+This is in no way associated with or endorsed by the SeverSpec project or its developers. (When I proposed that they include
+a HTTP request type, I was told that was "using [serverspec] wrong", and the GitHub issue was deleted). I imagine that,
+at the least, they'd tell me that (1) these should be in SpecInfra, and (2) these aren't "proper" things for ServerSpec
+to test. That being said, these are useful to me, for my purposes. I hope they're also useful to someone else.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'serverspec-extended-matchers'
+    gem 'serverspec-extended-types'
 
 And then execute:
 
@@ -14,7 +33,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install serverspec-extended-matchers
+    $ gem install serverspec-extended-types
 
 ## Usage
 
@@ -22,8 +41,26 @@ TODO: Write usage instructions here
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/serverspec-extended-matchers/fork )
+1. Fork it ( https://github.com/jantman/serverspec-extended-types/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+## Testing
+
+Spec tests are done automatically via Travis CI. They're run using Bundler and rspec.
+
+For manual testing:
+
+    bundle install
+    bundle exec rake spec
+
+## Releasing
+
+1. Ensure all tests are passing, coverage is acceptable, etc.
+2. Increment the version number in ``lib/serverspec_extended_types/version.rb``
+3. Update CHANGES.md
+4. Push those changes to origin.
+5. ``bundle exec rake build``
+6. ``bundle exec rake release``
