@@ -1,5 +1,4 @@
 require "serverspec_extended_types/version"
-
-module ServerspecExtendedTypes
-  # Your code goes here...
-end
+require 'serverspec_extended_types/bitlbee'
+require 'serverspec_extended_types/http_get'
+require 'serverspec_extended_types/virtualenv'
