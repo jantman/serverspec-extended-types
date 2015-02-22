@@ -26,6 +26,14 @@ a HTTP request type, I was told that was "using [serverspec] wrong", and the Git
 at the least, they'd tell me that (1) these should be in SpecInfra, and (2) these aren't "proper" things for ServerSpec
 to test. That being said, these are useful to me, for my purposes. I hope they're also useful to someone else.
 
+## TODO
+
+* rdoc for all types and matchers; make this the canonical documentation?
+* make sure it looks right on rubydoc.info
+* make sure everything is suitably generic for other people; document all assumptions
+* spec tests for everything
+* travis, coverage
+
 ## Installation
 
 Add this line to your application's Gemfile:

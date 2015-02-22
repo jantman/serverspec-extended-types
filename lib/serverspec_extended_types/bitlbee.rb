@@ -37,6 +37,8 @@ module Serverspec
           end
         rescue Timeout::Error
           @timed_out_status = true
+        rescue Errno::ECONNREFUSED
+          @connected_status = false
         end
       end
 
