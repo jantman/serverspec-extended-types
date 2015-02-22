@@ -49,7 +49,7 @@ Or install it yourself as:
 
 In your spec_helper, add a line like:
 
-    require 'rspec_matcher_hash_item'
+    require 'serverspec_extended_types'
 
 Then use the various types that this gem provides:
 
