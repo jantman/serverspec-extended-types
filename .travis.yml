@@ -1,0 +1,13 @@
+---
+language: ruby
+before_install:
+  - gem install bundler
+install: bundle install
+script: bundle exec rspec --color --format documentation
+notifications:
+  email: true
+rvm:
+  - 2.0.0
+env:
+  global:
+    - NOKOGIRI_USE_SYSTEM_LIBRARIES=true
