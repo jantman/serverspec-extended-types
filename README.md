@@ -33,6 +33,8 @@ to test. That being said, these are useful to me, for my purposes. I hope they'r
 * make sure everything is suitably generic for other people; document all assumptions
 * spec tests for everything
 * travis, coverage
+* job to test running yard, and fail on any errors or undocumented stuff
+* way to automatically generate README.md type documentation?
 
 ## Installation
 

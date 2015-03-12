@@ -1,0 +1,15 @@
+require 'spec_helper'
+require 'serverspec_extended_types/http_get'
+
+describe 'bitlbee()' do
+  context 'Serverspec::Type method' do
+    it 'instantiates the class with the correct parameters' do
+      expect(Serverspec::Type::Bitlbee).to receive(:new).with(1, 'mynick', 'mypass')
+      bitlbee(1, 'mynick', 'mypass')
+    end
+    it 'returns the new object' do
+      expect(Serverspec::Type::Bitlbee).to receive(:new).and_return("foo")
+      expect(bitlbee(1, 'foo', 'bar')).to eq "foo"
+    end
+  end
+end

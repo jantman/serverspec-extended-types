@@ -17,6 +17,8 @@
 require 'socket'
 require 'openssl'
 require 'timeout'
+require 'serverspec'
+require 'serverspec/type/base'
 
 module Serverspec
   module Type
@@ -43,8 +45,6 @@ module Serverspec
       end
 
       def connect
-        password = @password
-        nick = @nick
         sock = TCPSocket.open(@host, @port)
         ctx = OpenSSL::SSL::SSLContext.new
         ctx.set_params(verify_mode: OpenSSL::SSL::VERIFY_NONE)
@@ -52,6 +52,14 @@ module Serverspec
           socket.sync_close = true
           socket.connect
         end
+        communicate
+        @socket.puts("QUIT :\"outta here\"\n")
+        @socket.close
+      end
+
+      def communicate
+        password = @password
+        nick = @nick
         @socket.puts("PASS #{password}\n")
         @socket.puts("NICK #{nick}\n")
         @socket.puts("USER #{nick} #{nick} ec2a-live.jasonantman.com :Jason Antman\n")
@@ -79,10 +87,8 @@ module Serverspec
             break
           end
         end
-        @socket.puts("QUIT :\"outta here\"\n")
-        @socket.close
       end
-
+      
       def timed_out?
         @timed_out_status
       end
