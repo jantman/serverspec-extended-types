@@ -33,6 +33,11 @@ module Serverspec
         @connected_status = false
         @version_str = ""
         @timed_out_status = false
+        @started = false
+      end
+
+      def start
+        @started = true
         begin
           Timeout::timeout(10) do
             connect
@@ -43,7 +48,7 @@ module Serverspec
           @connected_status = false
         end
       end
-
+      
       def connect
         sock = TCPSocket.open(@host, @port)
         ctx = OpenSSL::SSL::SSLContext.new
@@ -73,7 +78,7 @@ module Serverspec
             @socket.puts("PRIVMSG &bitlbee :identify #{password}\n")
             data = ""
           elsif data =~ /PING/
-            @socket.puts(":ec2a-live.jasonantman.com PONG ec2a-live.jasonantman.com :ec2a-live.jasonantman.com")
+            @socket.puts(":ec2a-live.jasonantman.com PONG ec2a-live.jasonantman.com :ec2a-live.jasonantman.com\n")
             data = ""
           elsif data =~ /MODE #{nick} :\+i/
             break
@@ -90,14 +95,17 @@ module Serverspec
       end
       
       def timed_out?
+        start if not @started
         @timed_out_status
       end
       
       def connectable?
+        start if not @started
         @connected_status
       end
 
       def version
+        start if not @started
         @version_str
       end
       
