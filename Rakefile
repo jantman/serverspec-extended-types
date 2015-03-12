@@ -38,6 +38,7 @@ task :checkdocs do
         puts line
       end
     end
+    exit!(1)
   end
 end
 
