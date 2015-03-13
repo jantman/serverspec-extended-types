@@ -42,6 +42,10 @@ task :checkdocs do
   end
 end
 
+YARD::Rake::YardocTask.new do |t|
+  t.files   = ['lib/**/*.rb']
+end
+
 desc "run all CI tests"
 task :test do
   Rake::Task['spec'].invoke()
