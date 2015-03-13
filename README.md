@@ -28,12 +28,10 @@ to test. That being said, these are useful to me, for my purposes. I hope they'r
 
 ## TODO
 
-* make sure it looks right on rubydoc.info
+* make sure docs look right on rubydoc.info
 * make sure everything is suitably generic for other people; document all assumptions
-* spec tests for everything
-* travis, coverage
-* job to test running yard, and fail on any errors or undocumented stuff
-* way to automatically generate README.md type documentation?
+* way to automatically generate README.md type documentation? or else fill in docs below
+* grep for "ec2a-live" or "jasonantman.com" and make sure anything hard-coded is removed
 
 ## Installation
 
@@ -81,7 +79,7 @@ Spec tests are done automatically via Travis CI. They're run using Bundler and r
 For manual testing:
 
     bundle install
-    bundle exec rake spec
+    bundle exec rake test
 
 ## Releasing
 
