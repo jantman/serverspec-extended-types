@@ -28,7 +28,6 @@ to test. That being said, these are useful to me, for my purposes. I hope they'r
 
 ## TODO
 
-* rdoc for all types and matchers; make this the canonical documentation?
 * make sure it looks right on rubydoc.info
 * make sure everything is suitably generic for other people; document all assumptions
 * spec tests for everything
