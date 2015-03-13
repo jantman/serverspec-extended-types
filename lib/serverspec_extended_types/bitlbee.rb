@@ -39,10 +39,12 @@ module Serverspec
       # @param port [Integer] the port to connect to
       # @param nick [String] the nick to connect as
       # @param password [String] the password for nick
-      def initialize(port, nick, password)
+      # @param use_ssl [Boolean] whether to connect with SSL
+      def initialize(port, nick, password, use_ssl=false)
         @port = port
         @host = ENV['TARGET_HOST']
         @nick = nick
+        @use_ssl = use_ssl
         @password = password
         @connected_status = false
         @version_str = ""
@@ -61,7 +63,7 @@ module Serverspec
         @started = true
         begin
           Timeout::timeout(10) do
-            connect
+            @use_ssl ? ( connect_ssl ) : ( connect )
           end
         rescue Timeout::Error
           @timed_out_status = true
@@ -70,11 +72,22 @@ module Serverspec
         end
       end
 
-      # Open SSL connection to the IRC server
+      # connection to the IRC server (without SSL)
       #
       # @api private
       # @return [nil]
       def connect
+        @socket = TCPSocket.open(@host, @port)
+        communicate
+        @socket.puts("QUIT :\"outta here\"\n")
+        @socket.close
+      end
+
+      # Open SSL connection to the IRC server
+      #
+      # @api private
+      # @return [nil]
+      def connect_ssl
         sock = TCPSocket.open(@host, @port)
         ctx = OpenSSL::SSL::SSLContext.new
         ctx.set_params(verify_mode: OpenSSL::SSL::VERIFY_NONE)
@@ -175,9 +188,15 @@ module Serverspec
     #   end
     #
     # @api public
+    #
+    # @param port [Integer] the port to connect to
+    # @param nick [String] the nick to connect as
+    # @param password [String] the password for nick
+    # @param use_ssl [Boolean] whether to connect with SSL
+    #
     # @return {Serverspec::Type::Bitlbee} instance
-    def bitlbee(port, nick, password)
-      Bitlbee.new(port, nick, password)
+    def bitlbee(port, nick, password, use_ssl=false)
+      Bitlbee.new(port, nick, password, use_ssl)
     end
   end
 end

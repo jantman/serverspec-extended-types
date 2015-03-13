@@ -3,7 +3,7 @@ require 'serverspec_extended_types/http_get'
 
 describe 'Serverspec::Type.bitlbee' do
   it 'instantiates the class with the correct parameters' do
-    expect(Serverspec::Type::Bitlbee).to receive(:new).with(1, 'mynick', 'mypass')
+    expect(Serverspec::Type::Bitlbee).to receive(:new).with(1, 'mynick', 'mypass', false)
     bitlbee(1, 'mynick', 'mypass')
   end
   it 'returns the new object' do
@@ -24,12 +24,28 @@ describe 'Serverspec::Type::Bitlbee' do
       expect(x.instance_variable_get(:@version_str)).to eq ''
       expect(x.instance_variable_get(:@timed_out_status)).to eq false
       expect(x.instance_variable_get(:@started)).to eq false
+      expect(x.instance_variable_get(:@use_ssl)).to eq false
+    end
+    it 'sets use_ssl instance variable' do
+      stub_const('ENV', ENV.to_hash.merge('TARGET_HOST' => 'myhost'))
+      x = bitlbee(1, 'foo', 'bar', use_ssl=true)
+      expect(x.instance_variable_get(:@use_ssl)).to eq true
     end
   end
   context 'start' do
-    it 'calls connect' do
+    it 'calls connect_ssl if use_ssl=true' do
+      x = bitlbee(1, 'foo', 'bar', use_ssl=true)
+      expect(x).to receive(:connect_ssl).once
+      expect(x).to_not receive(:connect)
+      x.start
+      expect(x.instance_variable_get(:@timed_out_status)).to eq false
+      expect(x.instance_variable_get(:@connected_status)).to eq false
+      expect(x.instance_variable_get(:@started)).to eq true
+    end
+    it 'calls connect if use_ssl=false' do
       x = bitlbee(1, 'foo', 'bar')
       expect(x).to receive(:connect).once
+      expect(x).to_not receive(:connect_ssl)
       x.start
       expect(x.instance_variable_get(:@timed_out_status)).to eq false
       expect(x.instance_variable_get(:@connected_status)).to eq false
@@ -65,7 +81,7 @@ describe 'Serverspec::Type::Bitlbee' do
       expect(x.connectable?).to eq false
     end
   end
-  context '#connect' do
+  context '#connect_ssl' do
     it 'calls communicate' do
       stub_const('ENV', ENV.to_hash.merge('TARGET_HOST' => 'myhost'))
       sock_dbl = double
@@ -85,8 +101,24 @@ describe 'Serverspec::Type::Bitlbee' do
       x.stub(:communicate) do
         x.instance_variable_get(:@socket).puts("communicate")
       end
-      x.connect
+      x.connect_ssl
       expect(x.instance_variable_get(:@socket)).to eq sslsock_dbl
+    end
+  end
+  context '#connect' do
+    it 'calls communicate' do
+      stub_const('ENV', ENV.to_hash.merge('TARGET_HOST' => 'myhost'))
+      sock_dbl = double
+      expect(TCPSocket).to receive(:open).with('myhost', 1).and_return(sock_dbl)
+      expect(sock_dbl).to receive(:puts).ordered.with("communicate")
+      expect(sock_dbl).to receive(:puts).ordered.with("QUIT :\"outta here\"\n")
+      expect(sock_dbl).to receive(:close).ordered
+      x = bitlbee(1, 'foo', 'bar')
+      x.stub(:communicate) do
+        x.instance_variable_get(:@socket).puts("communicate")
+      end
+      x.connect
+      expect(x.instance_variable_get(:@socket)).to eq sock_dbl
     end
   end
   context '#communicate' do
