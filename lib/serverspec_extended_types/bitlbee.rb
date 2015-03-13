@@ -25,6 +25,20 @@ module Serverspec
 
     class Bitlbee < Base
 
+      # Bitlbee constructor
+      #
+      # Connects to Bitlbee on the host specified by ENV['TARGET_HOST']
+      #
+      # @api public
+      #
+      # @example Constructor
+      #   describe bitlbee(6697, 'nick', 'password') do
+      #     it { should be_virtualenv }
+      #   end
+      #
+      # @param port [Integer] the port to connect to
+      # @param nick [String] the nick to connect as
+      # @param password [String] the password for nick
       def initialize(port, nick, password)
         @port = port
         @host = ENV['TARGET_HOST']
@@ -36,6 +50,13 @@ module Serverspec
         @started = false
       end
 
+      # Begin timeout-wrapped connection
+      #
+      # This just calls {#connect} within a 10-second {Timeout::timeout} wrapper,
+      # and handles both timeout and {Errno::ECONNREFUSED}.
+      #
+      # @api private
+      # @return [nil]
       def start
         @started = true
         begin
@@ -48,7 +69,11 @@ module Serverspec
           @connected_status = false
         end
       end
-      
+
+      # Open SSL connection to the IRC server
+      #
+      # @api private
+      # @return [nil]
       def connect
         sock = TCPSocket.open(@host, @port)
         ctx = OpenSSL::SSL::SSLContext.new
@@ -62,6 +87,10 @@ module Serverspec
         @socket.close
       end
 
+      # Login to IRC and get version, over @socket
+      #
+      # @api private
+      # @return [nil]
       def communicate
         password = @password
         nick = @nick
@@ -93,17 +122,44 @@ module Serverspec
           end
         end
       end
-      
+
+      # Check whether the connection timed out
+      #
+      # @example serverspec test
+      #   describe bitlbee(6697, 'myuser', 'mypass') do
+      #     it { should_not be_timed_out }
+      #   end
+      #
+      # @api public
+      # @return [Boolean]
       def timed_out?
         start if not @started
         @timed_out_status
       end
-      
+
+      # Check whether we can successfully connect
+      #
+      # @example serverspec test
+      #   describe bitlbee(6697, 'myuser', 'mypass') do
+      #     it { should be_connectable }
+      #   end
+      #
+      # @api public
+      # @return [Boolean]
       def connectable?
         start if not @started
         @connected_status
       end
 
+      # Return the version string from Bitlbee
+      #
+      # @example
+      #   describe bitlbee(6697, 'myuser', 'mypass') do
+      #     its(:version) { should match /foo/ }
+      #   end
+      #
+      # @api public
+      # @return [String]
       def version
         start if not @started
         @version_str
@@ -111,6 +167,15 @@ module Serverspec
       
     end
 
+    # Serverspec Type method for Bitlbee
+    #
+    # @example
+    #   describe bitlbee(6697, 'myuser', 'mypass') do
+    #     # tests here
+    #   end
+    #
+    # @api public
+    # @return {Serverspec::Type::Bitlbee} instance
     def bitlbee(port, nick, password)
       Bitlbee.new(port, nick, password)
     end
