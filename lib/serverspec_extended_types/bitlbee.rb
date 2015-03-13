@@ -109,7 +109,7 @@ module Serverspec
         nick = @nick
         @socket.puts("PASS #{password}\n")
         @socket.puts("NICK #{nick}\n")
-        @socket.puts("USER #{nick} #{nick} ec2a-live.jasonantman.com :Jason Antman\n")
+        @socket.puts("USER #{nick} #{nick} servername :TestUser\n")
         while buf = (@socket.readpartial(1024) rescue nil )
           @connected_status = true
           (data||="") << buf
@@ -119,8 +119,8 @@ module Serverspec
           elsif data =~ /If you've never/
             @socket.puts("PRIVMSG &bitlbee :identify #{password}\n")
             data = ""
-          elsif data =~ /PING/
-            @socket.puts(":ec2a-live.jasonantman.com PONG ec2a-live.jasonantman.com :ec2a-live.jasonantman.com\n")
+          elsif data =~ /PING (\S+)/
+            @socket.puts(":#{$1} PONG #{$1} :#{$1}\n")
             data = ""
           elsif data =~ /MODE #{nick} :\+i/
             break

@@ -29,8 +29,6 @@ to test. That being said, these are useful to me, for my purposes. I hope they'r
 ## TODO
 
 * make sure docs look right on rubydoc.info
-* make sure everything is suitably generic for other people; document all assumptions
-* way to automatically generate README.md type documentation? or else fill in docs below
 * grep for "ec2a-live" or "jasonantman.com" and make sure anything hard-coded is removed
 
 ## Installation
