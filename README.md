@@ -211,18 +211,16 @@ Return the version of python installed in the virtualenv
 
 Test whether this appears to be a working venv
 
+    describe virtualenv('/path/to/venv') do
+      it { should be_virtualenv }
+    end
+
 Tests performed:
 
 * venv_path/bin/pip executable by root?
 * venv_path/bin/python executable by root?
 * venv_path/bin/activate executable by root?
-* ``export VIRTUAL_ENV`` in venv_path/bin/activate?
-
-
-        describe virtualenv('/path/to/venv') do
-          it { should be_virtualenv }
-        end
-
+* 'export VIRTUAL_ENV' in venv_path/bin/activate?
 
 ## Contributing
 
