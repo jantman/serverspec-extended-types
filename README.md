@@ -218,9 +218,11 @@ Tests performed:
 * venv_path/bin/activate executable by root?
 * ``export VIRTUAL_ENV`` in venv_path/bin/activate?
 
-    describe virtualenv('/path/to/venv') do
-      it { should be_virtualenv }
-    end
+
+        describe virtualenv('/path/to/venv') do
+          it { should be_virtualenv }
+        end
+
 
 ## Contributing
 
