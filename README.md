@@ -53,9 +53,109 @@ In your spec_helper, add a line like:
 
 Then use the various types that this gem provides:
 
-### Types
+## Types
 
-#### @TODO - foo
+### bitlbee
+
+The bitlbee type allows testing connectivity to a [bitlbee](http://www.bitlbee.org/) IRC gateway server.
+
+    describe bitlbee(port, nick, password, use_ssl=false) do
+      # matchers here
+	end
+
+All server communication happens during instantiation of the type; when ``describe bitlbee()`` is executed,
+the type will attempt to connect to the server (with a timeout of 10 seconds) and authenticate as
+the specified user, and store a number of state variables for later use by the various matchers.
+
+This type supports SSL, but connects to the server without verifying certificates.
+
+#### Parameters:
+
+* __port__ - integer port number to connect to
+* __nick__ - nick/username to login as
+* __password__ - the password for nick
+* __use_ssl__ - Boolean, whether or not to use SSL; defaults to false
+
+#### Matchers
+
+##### connectable?
+
+True if the test was able to successfully connect and authenticate, false otherwise.
+
+    describe bitlbee(port, nick, password) do
+      it { should be_connectable }
+	end
+
+##### timed_out?
+
+True if the connection is aborted by a timeout, false otherwise.
+
+    describe bitlbee(port, nick, password) do
+      it { should_not be_timed_out }
+	end
+
+##### version
+
+Returns the Bitlbee version String.
+
+    describe bitlbee(port, nick, password) do
+      its(:version) { should match /3\.\d+\.\d+ Linux/ }
+	end
+
+### http_get
+
+The http_get type performs an HTTP GET from the local (rspec runner) system, against
+the IP address that serverspec is running against (``ENV[TARGET_HOST]``), with a
+specified ``Host`` header value. The request is wrapped in a configurable-length timeout.
+
+    describe http_get(port, host_header, path, timeout_sec=10)
+      # matchers here
+	end
+
+All server communication happens during instantiation of the type; when ``describe http_get()`` is executed,
+the type will attempt to issue the GET request with a default timeout of 10 seconds, and store a number of
+state variables for later use by the various matchers.
+
+#### Parameters
+
+* __port__ - the port to make the HTTP request to
+* __host_header__ - the ``Host`` header value to provide in the request
+* __path__ - the path to request from the server
+* __timeout_sec__ - timeout in seconds before canceling the request (Int; default 10)
+
+#### Matchers
+
+##### body
+
+Returns the String body content of the HTTP response.
+
+    describe http_get(80, 'myhostname', '/') do
+      its(:body) { should match /<html>/ }
+	end
+
+##### headers
+
+Returns the HTTP response headers as a hash.
+
+    describe http_get(80, 'myhostname', '/') do
+      its(:headers) { should include('HeaderName' => /value regex/) }
+    end
+
+##### status
+
+Returns the HTTP status code, or 0 if timed out.
+
+    describe http_get(80, 'myhostname', '/') do
+      its(:status) { should eq 200 }
+    end
+
+##### timed_out?
+
+True if the request timed out, false otherwise.
+
+    describe http_get(80, 'myhostname', '/') do
+      it { should_not be_timed_out }
+	end
 
 ## Contributing
 
