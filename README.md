@@ -157,6 +157,71 @@ True if the request timed out, false otherwise.
       it { should_not be_timed_out }
 	end
 
+### virtualenv
+
+The virtualenv type has various matchers for testing the state and content of a
+Python [virtualenv](https://virtualenv.pypa.io/en/latest/). It executes commands
+via the builtin serverspec/specinfra command execution (i.e. uses the same backend
+code that the built-in ``command`` and ``file`` types use).
+
+    describe virtualenv('/path/to/venv') do
+      # matchers here
+    end
+
+Unlike the ``http_get`` and ``bitlbee`` types, execution of the ``virtualenv`` type
+commands is triggered by the matchers rather than the ``describe`` clause.
+
+#### Parameters
+
+* __name__ - the absolute path to the root of the virtualenv on the filesystem
+
+#### Matchers
+
+##### pip_freeze
+
+Return a hash of all packages present in `pip freeze` output for the venv
+
+Note that any editable packages (`-e something`) are returned as hash keys
+with an empty value.
+
+    describe virtualenv('/path/to/venv') do
+      its(:pip_freeze) { should include('wsgiref' => '0.1.2') }
+      its(:pip_freeze) { should include('requests') }
+      its(:pip_freeze) { should include('pytest' => /^2\.6/) }
+      its(:pip_freeze) { should include('-e git+git@github.com:jantman/someproject.git@1d8a380e3af9d081081d7ef685979200a7db4130#egg=someproject') }
+    end
+
+##### pip_version
+
+Return the version of pip installed in the virtualenv
+
+    describe virtualenv('/path/to/venv') do
+      its(:pip_version) { should match /^6\.0\.6$/ }
+    end
+
+##### python_version
+
+Return the version of python installed in the virtualenv
+
+    describe virtualenv('/path/to/venv') do
+      its(:python_version) { should match /^2\.7\.9$/ }
+    end
+
+##### virtualenv?
+
+Test whether this appears to be a working venv
+
+Tests performed:
+
+* venv_path/bin/pip executable by root?
+* venv_path/bin/python executable by root?
+* venv_path/bin/activate executable by root?
+* ``export VIRTUAL_ENV`` in venv_path/bin/activate?
+
+    describe virtualenv('/path/to/venv') do
+      it { should be_virtualenv }
+    end
+
 ## Contributing
 
 1. Fork it ( https://github.com/jantman/serverspec-extended-types/fork )
