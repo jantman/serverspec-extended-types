@@ -15,7 +15,7 @@ describe 'http_get()' do
   context 'initialize' do
     it 'sets instance variables' do
       expect_any_instance_of(Serverspec::Type::Http_Get).to receive(:getpage).once
-      stub_const('ENV', ENV.to_hash.merge('SERVERSPEC_TARGET_HOST' => 'myhost'))
+      stub_const('ENV', ENV.to_hash.merge('TARGET_HOST' => 'myhost'))
       x = http_get(1, 'hostheader', 'mypath', timeout_sec=20)
       expect(x.instance_variable_get(:@ip)).to eq 'myhost'
       expect(x.instance_variable_get(:@port)).to eq 1
@@ -51,7 +51,7 @@ describe 'http_get()' do
   end
   context '#getpage' do
     it 'requests the page' do
-      stub_const('ENV', ENV.to_hash.merge('SERVERSPEC_TARGET_HOST' => 'myhost'))
+      stub_const('ENV', ENV.to_hash.merge('TARGET_HOST' => 'myhost'))
       conn = double
       headers = double
       expect(headers).to receive(:[]=).with(:user_agent, 'Serverspec::Type::Http_Get/0.0.1 (https://github.com/jantman/serverspec-extended-types)')

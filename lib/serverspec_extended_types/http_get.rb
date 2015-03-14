@@ -38,7 +38,7 @@ module Serverspec
       # @api public
       # @return [nil]
       def initialize(port, host_header, path, timeout_sec=10)
-        @ip = ENV['SERVERSPEC_TARGET_HOST']
+        @ip = ENV['TARGET_HOST']
         @port = port
         @host = host_header
         @path = path
