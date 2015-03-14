@@ -94,7 +94,7 @@ module Serverspec
       #
       # @example
       #   describe http_get(80, 'myhostname', '/') do
-      #     its(:headers) { should include('HeaderName' => /value regex/ }
+      #     its(:headers) { should include('HeaderName' => /value regex/) }
       #   end
       #
       # @api public
