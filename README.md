@@ -217,9 +217,9 @@ Test whether this appears to be a working venv
 
 Tests performed:
 
-* venv_path/bin/pip executable by root?
-* venv_path/bin/python executable by root?
-* venv_path/bin/activate executable by root?
+* venv_path/bin/pip executable by owner?
+* venv_path/bin/python executable by owner?
+* venv_path/bin/activate readable by owner?
 * 'export VIRTUAL_ENV' in venv_path/bin/activate?
 
 ## Contributing

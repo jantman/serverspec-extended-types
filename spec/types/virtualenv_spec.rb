@@ -16,36 +16,36 @@ describe 'Serverspec::Type#virtualenv' do
   context '#virtualenv?' do
     it 'checks all files' do
       v = virtualenv('/foo/bar')
-      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/pip', 'root').and_return(true)
-      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/python', 'root').and_return(true)
-      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/activate', 'root').and_return(true)
+      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/pip', 'owner').and_return(true)
+      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/python', 'owner').and_return(true)
+      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_readable).once.ordered.with('/foo/bar/bin/activate', 'owner').and_return(true)
       res = Specinfra::CommandResult.new({:stdout => '', :stderr => '', :exit_signal => nil, :exit_status => 0 })
       expect(v.instance_variable_get(:@runner)).to receive(:run_command).once.ordered.with("grep -q 'export VIRTUAL_ENV' /foo/bar/bin/activate").and_return(res)
       expect(v.virtualenv?).to eq true
     end
     it 'returns false with missing pip' do
       v = virtualenv('/foo/bar')
-      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/pip', 'root').and_return(false)
+      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/pip', 'owner').and_return(false)
       expect(v.virtualenv?).to eq false
     end
     it 'returns false with missing python' do
       v = virtualenv('/foo/bar')
-      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/pip', 'root').and_return(true)
-      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/python', 'root').and_return(false)
+      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/pip', 'owner').and_return(true)
+      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/python', 'owner').and_return(false)
       expect(v.virtualenv?).to eq false
     end
     it 'returns false with missing activate' do
       v = virtualenv('/foo/bar')
-      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/pip', 'root').and_return(true)
-      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/python', 'root').and_return(true)
-      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/activate', 'root').and_return(false)
+      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/pip', 'owner').and_return(true)
+      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/python', 'owner').and_return(true)
+      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_readable).once.ordered.with('/foo/bar/bin/activate', 'owner').and_return(false)
       expect(v.virtualenv?).to eq false
     end
     it 'returns false with invalid activate' do
       v = virtualenv('/foo/bar')
-      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/pip', 'root').and_return(true)
-      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/python', 'root').and_return(true)
-      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/activate', 'root').and_return(true)
+      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/pip', 'owner').and_return(true)
+      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_executable).once.ordered.with('/foo/bar/bin/python', 'owner').and_return(true)
+      expect(v.instance_variable_get(:@runner)).to receive(:check_file_is_readable).once.ordered.with('/foo/bar/bin/activate', 'owner').and_return(true)
       res = Specinfra::CommandResult.new({:stdout => '', :stderr => '', :exit_signal => nil, :exit_status => 254 })
       expect(v.instance_variable_get(:@runner)).to receive(:run_command).once.ordered.with("grep -q 'export VIRTUAL_ENV' /foo/bar/bin/activate").and_return(res)
       expect(v.virtualenv?).to eq false

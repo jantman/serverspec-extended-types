@@ -54,7 +54,7 @@ describe 'http_get()' do
       stub_const('ENV', ENV.to_hash.merge('TARGET_HOST' => 'myhost'))
       conn = double
       headers = double
-      expect(headers).to receive(:[]=).with(:user_agent, 'Serverspec::Type::Http_Get/0.0.1 (https://github.com/jantman/serverspec-extended-types)')
+      expect(headers).to receive(:[]=).with(:user_agent, %r"Serverspec::Type::Http_Get/\d+\.\d+\.\d+ \(https://github.com/jantman/serverspec-extended-types\)")
       expect(conn).to receive(:headers).and_return(headers)
       expect(headers).to receive(:[]=).with(:Host, 'hostheader')
       expect(conn).to receive(:headers).and_return(headers)

@@ -15,9 +15,9 @@ module Serverspec::Type
     # Test whether this appears to be a working venv
     #
     # Tests performed:
-    # - venv_path/bin/pip executable by root?
-    # - venv_path/bin/python executable by root?
-    # - venv_path/bin/activate executable by root?
+    # - venv_path/bin/pip executable by owner?
+    # - venv_path/bin/python executable by owner?
+    # - venv_path/bin/activate readable by owner?
     # - 'export VIRTUAL_ENV' in venv_path/bin/activate?
     #
     # @example
@@ -32,9 +32,9 @@ module Serverspec::Type
       python_path = ::File.join(@name, 'bin', 'python')
       act_path = ::File.join(@name, 'bin', 'activate')
       cmd = "grep -q 'export VIRTUAL_ENV' #{act_path}"
-      @runner.check_file_is_executable(pip_path, 'root') and
-        @runner.check_file_is_executable(python_path, 'root') and
-        @runner.check_file_is_executable(act_path, 'root') and
+      @runner.check_file_is_executable(pip_path, 'owner') and
+        @runner.check_file_is_executable(python_path, 'owner') and
+        @runner.check_file_is_readable(act_path, 'owner') and
         @runner.run_command(cmd).exit_status.to_i == 0
     end
 
