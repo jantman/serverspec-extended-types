@@ -33,7 +33,7 @@ module Serverspec
       #
       # @example Constructor
       #   describe bitlbee(6697, 'nick', 'password') do
-      #     it { should be_virtualenv }
+      #     # tests here
       #   end
       #
       # @param port [Integer] the port to connect to
