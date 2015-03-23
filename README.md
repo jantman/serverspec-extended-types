@@ -17,7 +17,8 @@ Current types include:
 * A ``virtualenv`` type to make expectations about a Python Virtualenv, its ``pip`` and ``python`` versions, and packages
   installed in it. This also works for system-wide Python if ``pip`` is installed.
 * A ``http_get`` type to perform an HTTP GET request (specifying a port number, the ``Host:`` header to set, and the path
-  to request) and make expectations about whether the request times out, its status code, headers, and response body.
+  to request) and make expectations about whether the request times out, its status code, headers, response body, and
+  JSON content (if the response body is parsable as JSON).
 * A ``bitlbee`` type to actually connect via IRC to a running [bitlbee](http://www.bitlbee.org/) IRC gateway and authenticate
   to it, and make expectations that the connection and authentication worked, and what version of Bitlbee is running.
 
@@ -139,6 +140,15 @@ Returns the HTTP response headers as a hash.
 
     describe http_get(80, 'myhostname', '/') do
       its(:headers) { should include('HeaderName' => /value regex/) }
+    end
+
+##### json
+
+If the response body is deserializable as JSON, contains the JSON hash,
+otherwise an empty hash.
+
+    describe http_get(80, 'myhostname', '/') do
+      its(:json) { should include('Key' => /value regex/) }
     end
 
 ##### status

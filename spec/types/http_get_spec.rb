@@ -25,6 +25,7 @@ describe 'http_get()' do
       expect(x.instance_variable_get(:@content_str)).to be nil
       expect(x.instance_variable_get(:@headers_hash)).to be nil
       expect(x.instance_variable_get(:@response_code_int)).to be nil
+      expect(x.instance_variable_get(:@response_json)).to be nil
     end
     it 'calls getpage' do
       expect_any_instance_of(Serverspec::Type::Http_Get).to receive(:getpage).once
@@ -70,6 +71,31 @@ describe 'http_get()' do
       expect(x.body).to eq 'foo bar'
       expected_headers = {'h1' => 'h1val', 'h2' => 'h2val'}
       expect(x.headers).to eq expected_headers
+      expect(x.json).to be_empty
+      expect(x.json).to be_a_kind_of(Hash)
+    end
+    it 'sets JSON if parsable' do
+      stub_const('ENV', ENV.to_hash.merge('TARGET_HOST' => 'myhost'))
+      conn = double
+      headers = double
+      expect(headers).to receive(:[]=).with(:user_agent, %r"Serverspec::Type::Http_Get/\d+\.\d+\.\d+ \(https://github.com/jantman/serverspec-extended-types\)")
+      expect(conn).to receive(:headers).and_return(headers)
+      expect(headers).to receive(:[]=).with(:Host, 'hostheader')
+      expect(conn).to receive(:headers).and_return(headers)
+      response = double
+      expect(response).to receive(:status).and_return(200)
+      expect(response).to receive(:body).and_return('{"foo": "bar", "baz": {"blam": "blarg"}}')
+      expect(response).to receive(:headers).and_return({'h1' => 'h1val', 'h2' => 'h2val'})
+      expect(conn).to receive(:get).with('mypath').and_return(response)
+      expect(Faraday).to receive(:new).with("http://myhost:1/").and_return(conn)
+      x = http_get(1, 'hostheader', 'mypath')
+      expect(x.timed_out?).to eq false
+      expect(x.status).to eq 200
+      expect(x.body).to eq '{"foo": "bar", "baz": {"blam": "blarg"}}'
+      expected_headers = {'h1' => 'h1val', 'h2' => 'h2val'}
+      expect(x.headers).to eq expected_headers
+      expected_json = {"foo" => "bar", "baz" => {"blam" => "blarg"}}
+      expect(x.json).to eq expected_json
     end
   end
 end
