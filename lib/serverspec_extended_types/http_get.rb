@@ -12,6 +12,7 @@
 require 'timeout'
 require 'faraday'
 require 'serverspec_extended_types/version'
+require 'json'
 
 module Serverspec
   module Type
@@ -46,6 +47,7 @@ module Serverspec
         @content_str = nil
         @headers_hash = nil
         @response_code_int = nil
+        @response_json = nil
         begin
           Timeout::timeout(timeout_sec) do
             getpage
@@ -75,6 +77,12 @@ module Serverspec
         response.headers.each do |header, val|
           @headers_hash[header] = val
         end
+        # try to JSON decode
+        begin
+          @response_json = JSON.parse(@content_str)
+        rescue
+          @response_json = {}
+        end
       end
 
       # Whether or not the request timed out
@@ -103,6 +111,19 @@ module Serverspec
         @headers_hash
       end
 
+      # Returns the decoded JSON response, or an empty hash
+      #
+      # @example
+      #   describe http_get(80, 'myhostname', '/') do
+      #     its(:json) { should include('foo' => /value regex/) }
+      #   end
+      #
+      # @api public
+      # @return [Hash]
+      def json
+        @response_json
+      end
+      
       # Returns the HTTP status code, or 0 if timed out
       #
       # @example
