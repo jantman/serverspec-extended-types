@@ -30,6 +30,8 @@ module Serverspec
       # @param host_header [String] the value to set in the 'Host' HTTP request header
       # @param path [String] the URI/path to request from the server
       # @param timeout_sec [Int] how many seconds to allow request to run before timing out and setting @timed_out_status to True
+      # @param protocol [String] the protocol to connect to the server (e.g. 'http', 'https')
+      # @param bypass_ssl_verify [Boolean] if true, SSL verification will be bypassed (useful for self-signed certificates)
       #
       # @example
       #   describe http_get(80, 'myhostname', '/') do
@@ -38,7 +40,7 @@ module Serverspec
       #
       # @api public
       # @return [nil]
-      def initialize(port, host_header, path, timeout_sec=10)
+      def initialize(port, host_header, path, timeout_sec=10, protocol='http', bypass_ssl_verify=false)
         @ip = ENV['TARGET_HOST']
         @port = port
         @host = host_header
@@ -48,6 +50,8 @@ module Serverspec
         @headers_hash = nil
         @response_code_int = nil
         @response_json = nil
+        @protocol = protocol
+        @bypass_ssl_verify = bypass_ssl_verify
         begin
           Timeout::timeout(timeout_sec) do
             getpage
@@ -66,7 +70,10 @@ module Serverspec
       def getpage
         ip = @ip
         port = @port
-        conn = Faraday.new("http://#{ip}:#{port}/")
+        protocol = @protocol
+        options = []
+        options << { ssl: { verify: false } } if @bypass_ssl_verify
+        conn = Faraday.new("#{protocol}://#{ip}:#{port}/", *options)
         version = ServerspecExtendedTypes::VERSION
         conn.headers[:user_agent] = "Serverspec::Type::Http_Get/#{version} (https://github.com/jantman/serverspec-extended-types)"
         conn.headers[:Host] = @host
@@ -168,11 +175,13 @@ module Serverspec
     # @param host_header [String] the value to set in the 'Host' HTTP request header
     # @param path [String] the URI/path to request from the server
     # @param timeout_sec [Int] how many seconds to allow request to run before timing out and setting @timed_out_status to True
+    # @param protocol [String] the protocol to connect to the server (default 'http', can be 'https')
+    # @param bypass_ssl_verify [Boolean] if true, SSL verification will be bypassed (useful for self-signed certificates)
     #
     # @api public
     # @return [Serverspec::Type::Http_Get]
-    def http_get(port, host_header, path, timeout_sec=10)
-      Http_Get.new(port, host_header, path, timeout_sec=timeout_sec)
+    def http_get(port, host_header, path, timeout_sec=10, protocol='http', bypass_ssl_verify=false)
+      Http_Get.new(port, host_header, path, timeout_sec, protocol, bypass_ssl_verify)
     end
   end
 end
