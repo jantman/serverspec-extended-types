@@ -109,7 +109,7 @@ The http_get type performs an HTTP GET from the local (rspec runner) system, aga
 the IP address that serverspec is running against (``ENV[TARGET_HOST]``), with a
 specified ``Host`` header value. The request is wrapped in a configurable-length timeout.
 
-    describe http_get(port, host_header, path, timeout_sec=10)
+    describe http_get(port, host_header, path, timeout_sec=10, protocol='http', bypass_ssl_verify=false)
       # matchers here
 	end
 
@@ -123,6 +123,8 @@ state variables for later use by the various matchers.
 * __host_header__ - the ``Host`` header value to provide in the request
 * __path__ - the path to request from the server
 * __timeout_sec__ - timeout in seconds before canceling the request (Int; default 10)
+* __protocol__ - protocol to be used (default to `http`,  can be `http`)
+* __bypass_ssl_verify__ - bypass SSL verification (default to `false` to keep good security. Set it to `true` for self-signed certificates only!)
 
 #### Matchers
 
