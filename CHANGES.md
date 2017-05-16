@@ -1,5 +1,9 @@
 # serverspec-extended-types, changelog
 
+## HEAD
+
+* Add `protocol` (http|https) and `bypass_ssl_verify` parameters for http_get.
+
 ## 0.0.3 2015-03-23 Jason Antman <jason@jasonantman.com>
 
 * Add ``json`` matcher for http_get type.

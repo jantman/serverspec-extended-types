@@ -4,7 +4,7 @@ require 'serverspec_extended_types/http_get'
 describe 'http_get()' do
   context 'Serverspec::Type method' do
     it 'instantiates the class with the correct parameters' do
-      expect(Serverspec::Type::Http_Get).to receive(:new).with(1, 'hostheader', 'mypath', timeout_sec=20)
+      expect(Serverspec::Type::Http_Get).to receive(:new).with(1, 'hostheader', 'mypath', timeout_sec=20, 'http', false)
       http_get(1, 'hostheader', 'mypath', timeout_sec=20)
     end
     it 'returns the new object' do
@@ -26,6 +26,8 @@ describe 'http_get()' do
       expect(x.instance_variable_get(:@headers_hash)).to be nil
       expect(x.instance_variable_get(:@response_code_int)).to be nil
       expect(x.instance_variable_get(:@response_json)).to be nil
+      expect(x.instance_variable_get(:@protocol)).to eq 'http'
+      expect(x.instance_variable_get(:@bypass_ssl_verify)).to eq false
     end
     it 'calls getpage' do
       expect_any_instance_of(Serverspec::Type::Http_Get).to receive(:getpage).once
@@ -73,6 +75,32 @@ describe 'http_get()' do
       expect(x.headers).to eq expected_headers
       expect(x.json).to be_empty
       expect(x.json).to be_a_kind_of(Hash)
+    end
+    it 'supports https' do
+      # boilerplate
+      stub_const('ENV', ENV.to_hash.merge('TARGET_HOST' => 'myhost'))
+      headers = double
+      expect(headers).to receive(:[]=).with(:user_agent, %r"Serverspec::Type::Http_Get/\d+\.\d+\.\d+ \(https://github.com/jantman/serverspec-extended-types\)")
+      expect(headers).to receive(:[]=).with(:Host, 'hostheader')
+      conn = double(headers: headers)
+      response = double(status: 200, body: "OK", headers: [])
+      expect(conn).to receive(:get).with('mypath').and_return(response)
+      # most importantly, we want https here
+      expect(Faraday).to receive(:new).with("https://myhost:1/").and_return(conn)
+      x = http_get(1, 'hostheader', 'mypath', 30, 'https')
+    end
+    it 'supports ssl verify bypass for self-signed certificates' do
+      # boilerplate
+      stub_const('ENV', ENV.to_hash.merge('TARGET_HOST' => 'myhost'))
+      headers = double
+      expect(headers).to receive(:[]=).with(:user_agent, %r"Serverspec::Type::Http_Get/\d+\.\d+\.\d+ \(https://github.com/jantman/serverspec-extended-types\)")
+      expect(headers).to receive(:[]=).with(:Host, 'hostheader')
+      conn = double(headers: headers)
+      response = double(status: 200, body: "OK", headers: [])
+      expect(conn).to receive(:get).with('mypath').and_return(response)
+      # most importantly, we want https here
+      expect(Faraday).to receive(:new).with("https://myhost:1/", {ssl: {verify: false}}).and_return(conn)
+      x = http_get(1, 'hostheader', 'mypath', 30, 'https', true)
     end
     it 'sets JSON if parsable' do
       stub_const('ENV', ENV.to_hash.merge('TARGET_HOST' => 'myhost'))
