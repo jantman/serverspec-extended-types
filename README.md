@@ -6,7 +6,7 @@
 [![Gem Version](https://img.shields.io/gem/v/serverspec-extended-types.svg)](https://rubygems.org/gems/serverspec-extended-types)
 [![Total Downloads](https://img.shields.io/gem/dt/serverspec-extended-types.svg)](https://rubygems.org/gems/serverspec-extended-types)
 [![Github Issues](https://img.shields.io/github/issues/jantman/serverspec-extended-types.svg)](https://github.com/jantman/serverspec-extended-types/issues)
-[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/0.1.0/active.svg)](http://www.repostatus.org/#active)
+[![Project Status: Inactive – The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](http://www.repostatus.org/badges/2.0.0/inactive.svg)](http://www.repostatus.org/#inactive)
 
 serverspec-extended-types provides some purpose-specific types to be used with [serverspec](http://serverspec.org/) 2.x for
 testing various things on a host, as well as some types for high-level integration tests that make actual requests against
