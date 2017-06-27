@@ -148,8 +148,8 @@ describe 'http_get()' do
       expect(x.instance_variable_get(:@redirect_path)).to be nil
 
       # test exposed API
-      x.should_not be_redirected
-      x.should_not be_redirected_to 'https://myhost:1/mynewpath'
+      expect(x).to_not be_redirected
+      expect(x).to_not be_redirected_to 'https://myhost:1/mynewpath'
     end
     it 'supports redirects' do
       stub_const('ENV', ENV.to_hash.merge('TARGET_HOST' => 'myhost'))
@@ -174,8 +174,8 @@ describe 'http_get()' do
       expect(x.instance_variable_get(:@redirect_path)).to eq redirect_location
 
       # test exposed API
-      x.should be_redirected
-      x.should be_redirected_to redirect_location
+      expect(x).to be_redirected
+      expect(x).to be_redirected_to redirect_location
     end
   end
 end
