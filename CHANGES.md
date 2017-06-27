@@ -1,5 +1,9 @@
 # serverspec-extended-types, changelog
 
+## 0.1.1 2017-07-28 ojizero <z.acnts.816@protonmail.ch>
+
+* Add `redirected_to` and `redirected` matchers for http_get type.
+
 ## 0.1.0 2017-05-15 Jason Antman <jason@jasonantman.com>
 
 * Add `protocol` (http|https) and `bypass_ssl_verify` parameters for http_get.

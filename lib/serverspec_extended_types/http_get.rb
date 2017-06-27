@@ -20,6 +20,8 @@ module Serverspec
     # Perform an HTTP GET request against the serverspec target
     # using {http://www.rubydoc.info/gems/faraday/ Faraday}.
     class Http_Get < Base
+      # Http status codes that are tested against for redirect test
+      @@redirect_codes = [301, 302, 307, 308]
 
       # Initialize a bunch of instance variables, then call {#getpage}
       #
@@ -52,6 +54,8 @@ module Serverspec
         @response_json = nil
         @protocol = protocol
         @bypass_ssl_verify = bypass_ssl_verify
+        @redirects = false
+        @redirect_path = nil
         begin
           Timeout::timeout(timeout_sec) do
             getpage
@@ -84,6 +88,8 @@ module Serverspec
         response.headers.each do |header, val|
           @headers_hash[header] = val
         end
+        @redirects = @@redirect_codes.include? @response_code_int
+        @redirect_path = @redirects ? @headers_hash['location'] : nil
         # try to JSON decode
         begin
           @response_json = JSON.parse(@content_str)
@@ -130,7 +136,7 @@ module Serverspec
       def json
         @response_json
       end
-      
+
       # Returns the HTTP status code, or 0 if timed out
       #
       # @example
@@ -159,6 +165,32 @@ module Serverspec
       # @return [String]
       def body
         @content_str
+      end
+
+      # Whether or not it redirects to some other page
+      #
+      # @example
+      #   describe http_get(80, 'myhostname', '/') do
+      #     it { should be_redirected_to 'https://myhostname/' }
+      #   end
+      #
+      # @api public
+      # @return [Boolean]
+      def redirected_to? (redirect_path)
+        @redirects and @redirect_path == redirect_path
+      end
+
+      # Whether or not it redirects to any other page
+      #
+      # @example
+      #   describe http_get(80, 'myhostname', '/') do
+      #     it { should be_redirected }
+      #   end
+      #
+      # @api public
+      # @return [Boolean]
+      def redirected?
+        @redirects
       end
 
       private :getpage
