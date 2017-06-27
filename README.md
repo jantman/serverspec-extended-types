@@ -134,7 +134,7 @@ Returns the String body content of the HTTP response.
 
     describe http_get(80, 'myhostname', '/') do
       its(:body) { should match /<html>/ }
-	end
+    end
 
 ##### headers
 
@@ -167,7 +167,27 @@ True if the request timed out, false otherwise.
 
     describe http_get(80, 'myhostname', '/') do
       it { should_not be_timed_out }
-	end
+    end
+
+##### redirected?
+
+True if the request was redirected, false otherwise.
+
+    describe http_get(80, 'myhostname', '/') do
+      it { should be_redirected }
+    end
+
+##### redirected_to?
+
+True if the request was redirected to the specified location, false otherwise.
+
+    describe http_get(80, 'myhostname', '/') do
+      it { should be_redirected_to 'https://myhostname/newpath' }
+    end
+
+    describe http_get(80, 'myhostname', '/') do
+      it { should be_redirected_to 'http://mynewhost/' }
+    end
 
 ### virtualenv
 
