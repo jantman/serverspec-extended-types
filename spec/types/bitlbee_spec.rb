@@ -96,9 +96,9 @@ describe 'Serverspec::Type::Bitlbee' do
       expect(sslsock_dbl).to receive(:puts).ordered.with("QUIT :\"outta here\"\n")
       expect(sslsock_dbl).to receive(:close).ordered
       expect(OpenSSL::SSL::SSLSocket).to receive(:new).with(sock_dbl, sslctx_dbl).and_return(sslsock_dbl)
-      #expect_any_instance_of(Serverspec::Type::Bitlbee).to receive(:communicate)
+      # expect_any_instance_of(Serverspec::Type::Bitlbee).to receive(:communicate)
       x = bitlbee(1, 'foo', 'bar')
-      x.stub(:communicate) do
+      allow(x).to receive(:communicate) do
         x.instance_variable_get(:@socket).puts("communicate")
       end
       x.connect_ssl
@@ -114,7 +114,7 @@ describe 'Serverspec::Type::Bitlbee' do
       expect(sock_dbl).to receive(:puts).ordered.with("QUIT :\"outta here\"\n")
       expect(sock_dbl).to receive(:close).ordered
       x = bitlbee(1, 'foo', 'bar')
-      x.stub(:communicate) do
+      allow(x).to receive(:communicate) do
         x.instance_variable_get(:@socket).puts("communicate")
       end
       x.connect
