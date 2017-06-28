@@ -28,6 +28,8 @@ describe 'http_get()' do
       expect(x.instance_variable_get(:@response_json)).to be nil
       expect(x.instance_variable_get(:@protocol)).to eq 'http'
       expect(x.instance_variable_get(:@bypass_ssl_verify)).to eq false
+      expect(x.instance_variable_get(:@redirects)).to eq false
+      expect(x.instance_variable_get(:@redirect_path)).to be nil
     end
     it 'calls getpage' do
       expect_any_instance_of(Serverspec::Type::Http_Get).to receive(:getpage).once
@@ -124,6 +126,56 @@ describe 'http_get()' do
       expect(x.headers).to eq expected_headers
       expected_json = {"foo" => "bar", "baz" => {"blam" => "blarg"}}
       expect(x.json).to eq expected_json
+    end
+    it 'without redirects' do
+      stub_const('ENV', ENV.to_hash.merge('TARGET_HOST' => 'myhost'))
+
+      headers = double('header')
+      conn = double('conn', headers: headers)
+
+      expect(headers).to receive(:[]=).with(:user_agent, %r"Serverspec::Type::Http_Get/\d+\.\d+\.\d+ \(https://github.com/jantman/serverspec-extended-types\)")
+      expect(headers).to receive(:[]=).with(:Host, 'hostheader')
+
+      response = double('resp', status: 200, body: 'OK', headers: ({}))
+
+      expect(conn).to receive(:get).with('mypath').and_return(response)
+
+      expect(Faraday).to receive(:new).with('http://myhost:1/').and_return(conn)
+      x = http_get(1, 'hostheader', 'mypath')
+
+      # test internal parameters
+      expect(x.instance_variable_get(:@redirects)).to eq false
+      expect(x.instance_variable_get(:@redirect_path)).to be nil
+
+      # test exposed API
+      expect(x).to_not be_redirected
+      expect(x).to_not be_redirected_to 'https://myhost:1/mynewpath'
+    end
+    it 'supports redirects' do
+      stub_const('ENV', ENV.to_hash.merge('TARGET_HOST' => 'myhost'))
+
+      headers = double('header')
+      conn = double('conn', headers: headers)
+
+      expect(headers).to receive(:[]=).with(:user_agent, %r"Serverspec::Type::Http_Get/\d+\.\d+\.\d+ \(https://github.com/jantman/serverspec-extended-types\)")
+      expect(headers).to receive(:[]=).with(:Host, 'hostheader')
+
+      redirect_location = 'https://myhost:1/mynewpath'
+      response = double('resp', status: 301, body: 'OK', headers: {'location' => redirect_location})
+
+      expect(conn).to receive(:get).with('mypath').and_return(response)
+
+      expect(Faraday).to receive(:new).with('http://myhost:1/').and_return(conn)
+      x = http_get(1, 'hostheader', 'mypath')
+
+      # test internal parameters
+      expect(x.instance_variable_get(:@redirects)).to eq true
+      expect(x.instance_variable_get(:@redirect_path)).to_not be nil
+      expect(x.instance_variable_get(:@redirect_path)).to eq redirect_location
+
+      # test exposed API
+      expect(x).to be_redirected
+      expect(x).to be_redirected_to redirect_location
     end
   end
 end
